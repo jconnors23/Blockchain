@@ -2,21 +2,25 @@
 // public and private
 // private + data  = signature
 // public + signature = boolean
+// Wallet creation - > JSON 
+// Wallet balances?
+// Mining? 
 
-/*class Serializable {
+export class Serializable {
     toString() {
         return JSON.stringify(this); // string the whole current object
     }
-} */
+} 
 
 import crypto from 'crypto';
 
 // sender, receiver, value
-class Data {
+export class Data extends Serializable{
     sender: string; // p? 
     receiver: string; // p? 
     value: any; // p?
     constructor(sender: string, receiver: string, value: any) {
+        super();
         this.sender = sender;
         this.receiver = receiver;
         this.value = value;
@@ -31,7 +35,7 @@ class Data {
 
 // create the Block B <- B <- B <- B, backwards references 
 
-class Block {
+class Block extends Serializable {
     when: number;
     counter: number;
     data: Data;
@@ -39,6 +43,7 @@ class Block {
     current: string;
 
     constructor(when: number, data: Data, previous: string) {
+        super();
         this.when = when;
         this.data = data;
         this.previous = previous;
@@ -52,13 +57,15 @@ class Block {
 }
 
 // holds blocks
-class Chain {
+class Chain extends Serializable {
     blocks: Block[];
     constructor() {
+        super(); 
         this.blocks = [new Block(0, new Data('', '', ''), '')]; // origin block has when of zero 
     }
     // buffer? 
     appendBlock(block: Block, signature: Buffer): boolean {
+        //console.log(block.data.toString());
         const isValid = crypto.createVerify('sha256').update(block.data.toString()).verify(block.data.sender, signature)
         if (!isValid) { return false }
         // hashing, block added has reference to last block in current blockchain 
@@ -70,32 +77,13 @@ class Chain {
     }
 }
 
-class Wallet {
-    publicKey: string;
-    privateKey: string;
-    constructor(publicKey?: string, privateKey?: string) {
-        if (publicKey && privateKey) {
-            this.publicKey = publicKey;
-            this.privateKey = privateKey;
-            return;
-        }
-        // generate public + private keys using rsa 
-        const keys = crypto.generateKeyPairSync('rsa', {
-            modulusLength: 512,
-            publicKeyEncoding: { type: 'spki', format: 'pem' },
-            privateKeyEncoding: { type: 'pkcs8', format: 'pem' },
-        })
-        this.publicKey = keys.publicKey;
-        this.privateKey = keys.privateKey;
-    }
-
-    generate(receiver: string, value: any): [Block, Buffer] {
-        const dataInstance = new Data(this.publicKey, receiver, value);
-        const signature = crypto.createSign('sha256').update(dataInstance.toString()).sign(this.privateKey);
-        return [new Block(Date.now(), new Data(this.publicKey, receiver, value), ''), signature]
-    }
-}
-
-const b = new Block(1, new Data('', '', ''), '');
+//const b = new Block(1, new Data('', '', ''), '');
 //console.log(b);
+//const chain = new Chain(); 
+//const [block, signature] = new Wallet().generate('hello', 'world');
+//console.log(block, signature)
+//block.data.value = Number.MAX_SAFE_INTEGER;
+//console.log(block);
+
+//console.log(chain.appendBlock(block, signature));
 
