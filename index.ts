@@ -2,13 +2,14 @@
 // public and private
 // private + data  = signature
 // public + signature = boolean
+
 // Wallet creation - > JSON 
 // Wallet balances?
 // Mining? 
 
 export class Serializable {
     toString() {
-        return JSON.stringify(this); // string the whole current object
+        return JSON.stringify(this, undefined, '  '); // string the whole current object
     }
 } 
 
@@ -16,9 +17,9 @@ import crypto from 'crypto';
 
 // sender, receiver, value
 export class Data extends Serializable{
-    sender: string; // p? 
-    receiver: string; // p? 
-    value: any; // p?
+    sender: string; 
+    receiver: string; 
+    value: any; 
     constructor(sender: string, receiver: string, value: any) {
         super();
         this.sender = sender;
@@ -35,7 +36,7 @@ export class Data extends Serializable{
 
 // create the Block B <- B <- B <- B, backwards references 
 
-class Block extends Serializable {
+export class Block extends Serializable {
     when: number;
     counter: number;
     data: Data;
@@ -57,26 +58,29 @@ class Block extends Serializable {
 }
 
 // holds blocks
-class Chain extends Serializable {
+export class Chain extends Serializable {
+    static from(obj: any) {
+        const chain = new Chain();
+        chain.blocks = obj.blocks; 
+        return chain; 
+    }
     blocks: Block[];
     constructor() {
         super(); 
-        this.blocks = [new Block(0, new Data('', '', ''), '')]; // origin block has when of zero 
+        this.blocks = [new Block(0, new Data('', '', ''), '')]; // origin block has 'when' of zero 
     }
-    // buffer? 
     appendBlock(block: Block, signature: Buffer): boolean {
-        //console.log(block.data.toString());
         const isValid = crypto.createVerify('sha256').update(block.data.toString()).verify(block.data.sender, signature)
         if (!isValid) { return false }
         // hashing, block added has reference to last block in current blockchain 
         block.previous = this.blocks[this.blocks.length - 1].current;
         this.blocks.push(block);
         return true;
-        // A  <- B
-        //    b.prev = a.current
+        //    b.prev <- a.current
     }
 }
 
+//console.log(block.data.toString());
 //const b = new Block(1, new Data('', '', ''), '');
 //console.log(b);
 //const chain = new Chain(); 
@@ -84,6 +88,5 @@ class Chain extends Serializable {
 //console.log(block, signature)
 //block.data.value = Number.MAX_SAFE_INTEGER;
 //console.log(block);
-
 //console.log(chain.appendBlock(block, signature));
 

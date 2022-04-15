@@ -3,7 +3,10 @@ import { Block } from 'typescript';
 import { Data, Serializable } from '.';
 import wallet from './walletstorage.json'
 
-class Wallet extends Serializable {
+// creates, stores, pub & priv keys, 
+// generate new data with signatures that can be verified 
+
+export class Wallet extends Serializable {
     publicKey: string;
     privateKey: string;
     constructor(publicKey?: string, privateKey?: string) {
@@ -26,7 +29,7 @@ class Wallet extends Serializable {
     generate(receiver: string, value: any): [number, Data, Buffer] {
         console.log(this.privateKey, this.publicKey);
         const dataInstance = new Data(this.publicKey, receiver, value);
-        const signature = crypto.createSign('sha256').update(dataInstance.toString()).end().sign(this.privateKey);
+        const signature = crypto.createSign('sha256').update(dataInstance.toString()).end().sign(this.privateKey); // str, hash for data, security
         return [Date.now(), new Data(this.publicKey, receiver, value), signature];
     }
 
@@ -35,8 +38,6 @@ class Wallet extends Serializable {
         return new Wallet(iterate.publicKey, iterate.privateKey)
     }
 }
-
-// TODO read up on argvs , finishing up index to receive blocks , think of ideas for website  / discord, think of features  
 
 if (process.argv[2] === 'new') { // if running new, generate new wallet
     console.log(JSON.stringify(new Wallet));
@@ -48,3 +49,7 @@ if (process.argv[2] === 'new') { // if running new, generate new wallet
     // @ts-ignore
     console.log(JSON.stringify(values[0], values[1], signature))
 }
+
+// command line interface: run command in terminal: process name, what to execute (filemane ex), arguments: arg1 arg2 (do things based on args), testing purposes
+// terminal user interface: after user does something, prompted
+// people that chat get Moogle coins added to their wallet 
