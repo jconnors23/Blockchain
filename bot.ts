@@ -26,11 +26,8 @@ client.on('ready', () => {
 client.on('message', (msg) => {
     if (msg.author === client.user) { return }
     if (msg.content.includes('#balance')) {
-        const balance = getUserBalance(msg.author.id);
+        const balance = getTransacations(msg.author.id);
         msg.reply('Current Balance:' + balance); 
-
-
-
         return;
     }
     let value = 0.05;
@@ -48,9 +45,20 @@ function addUserCoins(id: string, value: number) {
     fs.writeFileSync('blockchain.json', JSON.stringify(CHAIN, undefined, '  ')); 
 }
 
-function getUserBalance(id: string): number {
-    
-    return 0; 
+function getTransacations(id: string): number {
+    const userwallet = getUserWallet(id);
+    let balance = 0; 
+    for (let i = 0; i < CHAIN.blocks.length; i++) {
+        const block = CHAIN.blocks[i]; 
+        if (block.data.sender === block.data.receiver) {
+            continue; 
+        } else if (block.data.sender === userwallet.publicKey) {
+            balance -= block.data.value.amount; 
+        } else if (block.data.receiver === userwallet.publicKey) {
+            balance += block.data.value.amount; 
+        }
+    }
+    return balance; 
 }
 
 function getUserWallet(id: string): Wallet {
@@ -68,4 +76,4 @@ client.login(process.env.discord_token)
 
 // get coins
 // see coins
-// blockified 
+// block
