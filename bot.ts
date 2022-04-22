@@ -5,6 +5,7 @@ import { Wallet } from './wallet';
 require('dotenv').config();
 
 const client = new djs.Client({intents: [djs.Intents.FLAGS.GUILDS, djs.Intents.FLAGS.GUILD_MESSAGES]})
+const botjunkid = '967116099927801906';
 const CHAIN = fs.existsSync('blockchain.json') 
     ? Chain.from(JSON.parse(fs.readFileSync('blockchain.json').toString()))
     : new Chain() 
@@ -26,7 +27,7 @@ client.on('ready', () => {
 client.on('message', (msg) => {
     if (msg.author === client.user) { return }
     if (msg.content.includes('#balance')) {
-        const balance = getTransacations(msg.author.id);
+        const balance = getTransactions(msg.author.id);
         msg.reply('Current Balance:' + balance); 
         return;
     }
@@ -34,7 +35,18 @@ client.on('message', (msg) => {
     if (msg.content.includes('http')) {
         value = 0.2;
     }
+    let currentBalance = Math.floor(getTransactions(msg.author.id)); 
     addUserCoins(msg.author.id, value)
+    let updatedBalance = Math.floor(getTransactions(msg.author.id)); 
+    if (currentBalance != updatedBalance) { // will trigger if they lose coins 
+        client.channels.fetch(botjunkid).then((channel) => {
+            // @ts-ignore
+            if (channel.isText()) {
+                // @ts-ignore
+                channel.send('Hello, <@' + msg.author.id + '> you have earned a Moogle Coin!');
+            }
+        })
+    }
 })
 
 function addUserCoins(id: string, value: number) {
@@ -45,7 +57,7 @@ function addUserCoins(id: string, value: number) {
     fs.writeFileSync('blockchain.json', JSON.stringify(CHAIN, undefined, '  ')); 
 }
 
-function getTransacations(id: string): number {
+function getTransactions(id: string): number {
     const userwallet = getUserWallet(id);
     let balance = 0; 
     for (let i = 0; i < CHAIN.blocks.length; i++) {
