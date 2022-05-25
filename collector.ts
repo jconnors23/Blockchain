@@ -5,7 +5,7 @@ import { Wallet } from './wallet';
 require('dotenv').config();
 
 const client = new djs.Client({intents: [djs.Intents.FLAGS.GUILDS, djs.Intents.FLAGS.GUILD_MESSAGES]})
-const botjunkid = '967116099927801906';
+const botjunkid = '967116099927801906'; // ? 
 const CHAIN = fs.existsSync('blockchain.json') 
     ? Chain.from(JSON.parse(fs.readFileSync('blockchain.json').toString()))
     : new Chain() 
