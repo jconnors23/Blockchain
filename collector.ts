@@ -28,7 +28,7 @@ client.on('message', (msg) => {
     if (msg.author === client.user) { return }
     if (msg.content.includes('#balance')) {
         const balance = getTransactions(msg.author.id);
-        msg.reply('Current Balance:' + balance); 
+        msg.reply('Current Balance: ' + balance + ' Coins'); 
         return;
     }
     let value = 0.05;
@@ -36,7 +36,7 @@ client.on('message', (msg) => {
         value = 0.2;
     }
     let currentBalance = Math.floor(getTransactions(msg.author.id)); 
-    addUserCoins(msg.author.id, value)
+    addUserCoins(msg.author, value)
     let updatedBalance = Math.floor(getTransactions(msg.author.id)); 
     if (currentBalance != updatedBalance) { // will trigger if they lose coins 
         client.channels.fetch(botjunkid).then((channel) => {
@@ -49,12 +49,25 @@ client.on('message', (msg) => {
     }
 })
 
-function addUserCoins(id: string, value: number) {
+function addUserCoins(author: djs.User, value: number) {
     const botwallet = getUserWallet(client.user!.id);
-    const userwallet = getUserWallet(id);
+    const userwallet = getUserWallet(author.id);
     const result = botwallet.generate(userwallet.publicKey, {amount: value});
     CHAIN.appendBlock(new Block(result[0], result[1], ''), result[2])
     fs.writeFileSync('blockchain.json', JSON.stringify(CHAIN, undefined, '  ')); 
+    // read from transactino, parse into json [], add to end of json, add back  
+
+    let empty = [];
+    empty = JSON.parse(fs.readFileSync('transactions.json').toString());
+    empty.push(
+        {
+            sender: client.user?.tag,
+            receiver: author?.tag,
+            value: value,
+            timestamp: new Date (result[0]).toISOString()
+        }
+    );
+    fs.writeFileSync('transactions.json', JSON.stringify(empty));
 }
 
 function getTransactions(id: string): number {
