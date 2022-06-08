@@ -1,5 +1,6 @@
 import crypto from 'crypto';
-import { Data, Serializable } from './blockchain';
+import { Data } from './blockchain';
+import { Serializable } from './serializable';
 
 // creates, stores, pub & priv keys, 
 // generate new data with signatures that can be verified 

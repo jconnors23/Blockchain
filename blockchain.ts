@@ -1,19 +1,5 @@
-// chain, add blocks to it, users can create wallets : public + private keys
-// public and private
-// private + data  = signature
-// public + signature = boolean
-
-// Wallet creation - > JSON 
-// Wallet balances?
-// Mining? 
-
-export class Serializable {
-    toString() {
-        return JSON.stringify(this, undefined, '  '); // string the whole current object
-    }
-} 
-
 import crypto from 'crypto';
+import { Serializable } from './serializable';
 
 // sender, receiver, value
 export class Data extends Serializable {
@@ -80,13 +66,4 @@ export class Chain extends Serializable {
     }
 }
 
-//console.log(block.data.toString());
-//const b = new Block(1, new Data('', '', ''), '');
-//console.log(b);
-//const chain = new Chain(); 
-//const [block, signature] = new Wallet().generate('hello', 'world');
-//console.log(block, signature)
-//block.data.value = Number.MAX_SAFE_INTEGER;
-//console.log(block);
-//console.log(chain.appendBlock(block, signature));
 

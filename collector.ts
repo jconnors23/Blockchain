@@ -1,24 +1,26 @@
+import { Wallet } from './wallet';
 import djs from 'discord.js';
 import { Block, Chain } from './blockchain'; 
 import fs from 'fs'; 
-import { Wallet } from './wallet';
 require('dotenv').config();
 
 const client = new djs.Client({intents: [djs.Intents.FLAGS.GUILDS, djs.Intents.FLAGS.GUILD_MESSAGES]})
 const botjunkid = '967116099927801906';
+console.log(Block); 
 const CHAIN = fs.existsSync('blockchain.json')  
     ? Chain.from(JSON.parse(fs.readFileSync('blockchain.json').toString()))
     : new Chain() 
 
 let wallets: Record<string, Wallet> = {  }
 
+/*
 if (fs.existsSync('wallets.json')) {
     const rawwallets = JSON.parse(fs.readFileSync('wallets.json').toString())
     for (const [key, value] of Object.entries(rawwallets)) {
         wallets[key] = Wallet.from(value); 
     }
 }
-
+*/
 client.on('ready', () => {
     console.log('collector logged in', client.user?.tag)
 })
