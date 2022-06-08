@@ -1,12 +1,12 @@
 import djs from 'discord.js';
-import { Block, Chain } from './index'; 
+import { Block, Chain } from './blockchain'; 
 import fs from 'fs'; 
 import { Wallet } from './wallet';
 require('dotenv').config();
 
 const client = new djs.Client({intents: [djs.Intents.FLAGS.GUILDS, djs.Intents.FLAGS.GUILD_MESSAGES]})
-const botjunkid = '967116099927801906'; // ? 
-const CHAIN = fs.existsSync('blockchain.json') 
+const botjunkid = '967116099927801906';
+const CHAIN = fs.existsSync('blockchain.json')  
     ? Chain.from(JSON.parse(fs.readFileSync('blockchain.json').toString()))
     : new Chain() 
 
@@ -15,7 +15,6 @@ let wallets: Record<string, Wallet> = {  }
 if (fs.existsSync('wallets.json')) {
     const rawwallets = JSON.parse(fs.readFileSync('wallets.json').toString())
     for (const [key, value] of Object.entries(rawwallets)) {
-        // set key of wallets(abc) = def , 2 notations for reading and writing 
         wallets[key] = Wallet.from(value); 
     }
 }
@@ -39,7 +38,7 @@ client.on('message', (msg) => {
     addUserCoins(msg.author, value)
     let updatedBalance = Math.floor(getTransactions(msg.author.id)); 
     if (currentBalance != updatedBalance) { // will trigger if they lose coins 
-        client.channels.fetch(botjunkid).then((channel) => {
+        client.channels.fetch(botjunkid).then((channel) => { // bot will send msg to this channel 
             // @ts-ignore
             if (channel.isText()) {
                 // @ts-ignore
@@ -55,7 +54,7 @@ function addUserCoins(author: djs.User, value: number) {
     const result = botwallet.generate(userwallet.publicKey, {amount: value});
     CHAIN.appendBlock(new Block(result[0], result[1], ''), result[2])
     fs.writeFileSync('blockchain.json', JSON.stringify(CHAIN, undefined, '  ')); 
-    // read from transactino, parse into json [], add to end of json, add back  
+    // read from transaction, parse into json [], add to end of json, add back  
 
     let empty = [];
     empty = JSON.parse(fs.readFileSync('transactions.json').toString());
@@ -91,14 +90,9 @@ function getUserWallet(id: string): Wallet {
         return wallets[id]; 
     }
     let current = new Wallet();
-    // key id val current
     wallets[id] = current; 
     fs.writeFileSync('wallets.json', JSON.stringify(wallets, undefined, '  ')); 
     return current;
 }
 
 client.login(process.env.discord_token)
-
-// get coins
-// see coins
-// block

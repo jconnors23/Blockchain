@@ -16,7 +16,7 @@ export class Serializable {
 import crypto from 'crypto';
 
 // sender, receiver, value
-export class Data extends Serializable{
+export class Data extends Serializable {
     sender: string; 
     receiver: string; 
     value: any; 
