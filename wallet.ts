@@ -1,7 +1,5 @@
 import crypto from 'crypto';
-import { Block } from 'typescript';
 import { Data, Serializable } from './blockchain';
-import wallet from './walletstorage.json'
 
 // creates, stores, pub & priv keys, 
 // generate new data with signatures that can be verified 
