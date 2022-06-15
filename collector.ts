@@ -12,14 +12,14 @@ const CHAIN = fs.existsSync('blockchain.json')
 
 let wallets: Record<string, Wallet> = {  }
 
-/*
+
 if (fs.existsSync('wallets.json')) {
     const rawwallets = JSON.parse(fs.readFileSync('wallets.json').toString())
     for (const [key, value] of Object.entries(rawwallets)) {
         wallets[key] = Wallet.from(value); 
     }
 }
-*/
+
 client.on('ready', () => {
     console.log('collector logged in', client.user?.tag)
 })
@@ -28,7 +28,8 @@ client.on('message', (msg) => {
     if (msg.author === client.user) { return }
     if (msg.content.includes('#balance')) {
         const balance = getTransactions(msg.author.id);
-        msg.reply('Current Balance: ' + balance + ' Coins'); 
+        const rounded = Math.round((balance + Number.EPSILON) * 100) / 100;
+        msg.reply('Current Balance: ' + rounded + ' Coins'); 
         return;
     }
     let value = 0.05;
