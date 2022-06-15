@@ -2,3 +2,4 @@ node_modules
 blockchain.json
 wallets.json
 .env
+*.js
