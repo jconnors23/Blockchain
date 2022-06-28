@@ -27,6 +27,13 @@ client.on('ready', () => {
 client.on('message', (msg) => {
     if (msg.author === client.user) { return }
     if (msg.content.includes('#balance')) {
+        let target = msg.mentions.members?.first(); 
+        if (target) {
+            const balance = getTransactions(target.id)
+            const rounded = Math.round((balance + Number.EPSILON) * 100) / 100;
+            msg.reply('Current Balance: ' + rounded + ' Coins'); 
+            return;
+        } 
         const balance = getTransactions(msg.author.id);
         const rounded = Math.round((balance + Number.EPSILON) * 100) / 100;
         msg.reply('Current Balance: ' + rounded + ' Coins'); 
